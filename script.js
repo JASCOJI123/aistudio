@@ -179,9 +179,14 @@ document.querySelectorAll('.pkg-card').forEach(card => {
   });
 });
 
+/* Buyurtma shu Telegram admin akkauntiga boradi.
+   O'zingizning Telegram username'ingizni shu yerga yozing (masalan "dunyo_admin"). */
+const ADMIN_USERNAME = "TELEGRAM_USERNAME"; // <-- shu yerga o'zgartiring
+
 const receiptLines = document.getElementById('receiptLines');
 const totalAmt = document.getElementById('totalAmt');
 const orderBtn = document.getElementById('orderBtn');
+const brandInput = document.getElementById('brandName');
 
 function fmt(n) { return n.toLocaleString('fr-FR').replace(/,/g, ' ') + " so'm"; }
 
@@ -189,19 +194,21 @@ function render() {
   let lines = [];
   let total = 0;
   let orderText = "";
-  const modelsTxt = selectedModels.length ? ` Tanlangan modellar: ${selectedModels.join(', ')}.` : "";
+  const brand = brandInput.value.trim();
+  const brandLine = brand ? `%0ABrend: ${encodeURIComponent(brand)}` : "";
+  const modelsLine = selectedModels.length ? `%0AModel: ${encodeURIComponent(selectedModels.map(m => 'Model ' + String(m).padStart(2, '0')).join(', '))}` : "";
 
   if (mode === 'single') {
     if (photoQty > 0) { lines.push(`<div class="r-line"><span>AI Rasm × ${photoQty}</span><b>${fmt(photoQty * PHOTO_PRICE)}</b></div>`); total += photoQty * PHOTO_PRICE; }
     if (videoQty > 0) { lines.push(`<div class="r-line"><span>AI Video × ${videoQty}</span><b>${fmt(videoQty * VIDEO_PRICE)}</b></div>`); total += videoQty * VIDEO_PRICE; }
     if (lines.length === 0) { lines.push(`<div class="r-line"><span>Hali tanlanmagan</span></div>`); }
-    orderText = `Salom! AI Studio orqali buyurtma bermoqchiman:%0A- AI Rasm: ${photoQty} dona%0A- AI Video: ${videoQty} dona%0AJami: ${fmt(total)}.${encodeURIComponent(modelsTxt)}`;
+    orderText = `AI STUDIO BUYURTMA${brandLine}%0AXizmat:%0A- AI Rasm: ${photoQty} dona%0A- AI Video: ${videoQty} dona${modelsLine}%0AJami: ${encodeURIComponent(fmt(total))}`;
   } else {
     if (selectedPkg) {
       lines.push(`<div class="r-line"><span>${selectedPkg.name} paket</span><b>${fmt(selectedPkg.price)}</b></div>`);
       lines.push(`<div class="r-line"><span>${selectedPkg.desc}</span></div>`);
       total = selectedPkg.price;
-      orderText = `Salom! "${selectedPkg.name}" paketini buyurtma bermoqchiman (${selectedPkg.desc}). Jami: ${fmt(total)}.${encodeURIComponent(modelsTxt)}`;
+      orderText = `AI STUDIO BUYURTMA${brandLine}%0APaket: ${encodeURIComponent(selectedPkg.name)} (${encodeURIComponent(selectedPkg.desc)})${modelsLine}%0AJami: ${encodeURIComponent(fmt(total))}`;
     } else {
       lines.push(`<div class="r-line"><span>Paket tanlanmagan</span></div>`);
       orderText = `Salom! AI Studio paketlari haqida ma'lumot olmoqchiman.`;
@@ -212,7 +219,9 @@ function render() {
   totalAmt.textContent = fmt(total);
   totalAmt.classList.add('pulse');
   setTimeout(() => totalAmt.classList.remove('pulse'), 150);
-  orderBtn.href = `https://t.me/share/url?url=&text=${orderText}`;
+  orderBtn.href = `https://t.me/${ADMIN_USERNAME}?text=${orderText}`;
 }
+
+brandInput.addEventListener('input', render);
 
 render();
