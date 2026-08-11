@@ -181,7 +181,7 @@ document.querySelectorAll('.pkg-card').forEach(card => {
 
 /* Buyurtma shu Telegram admin akkauntiga boradi.
    O'zingizning Telegram username'ingizni shu yerga yozing (masalan "dunyo_admin"). */
-const ADMIN_USERNAME = "TELEGRAM_USERNAME"; // <-- shu yerga o'zgartiring
+const ADMIN_USERNAME = "jascoav";
 
 const receiptLines = document.getElementById('receiptLines');
 const totalAmt = document.getElementById('totalAmt');
