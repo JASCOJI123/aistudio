@@ -31,6 +31,30 @@ marqueeTrack.innerHTML = slotHTML.repeat(10);
 /* ============================================================
    MENING ISHLARIM — rasm va video alohida joylarda
    ============================================================ */
+/* ============================================================
+   LIGHTBOX — bosilganda rasm/video to'liq ekranda ochiladi
+   Video ovozi bilan (unmuted) ijro etiladi.
+   ============================================================ */
+const lightbox = document.getElementById('lightbox');
+const lightboxInner = document.getElementById('lightboxInner');
+const lightboxClose = document.getElementById('lightboxClose');
+
+function openLightbox(type, src, poster) {
+  if (type === 'video') {
+    lightboxInner.innerHTML = `<video src="${src}" ${poster ? `poster="${poster}"` : ''} controls autoplay playsinline></video>`;
+  } else {
+    lightboxInner.innerHTML = `<img src="${src}" alt="">`;
+  }
+  lightbox.classList.add('open');
+}
+function closeLightbox() {
+  lightbox.classList.remove('open');
+  lightboxInner.innerHTML = '';
+}
+lightboxClose.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+
 const photoGrid = document.getElementById('photoGrid');
 const videoGrid = document.getElementById('videoGrid');
 
@@ -40,7 +64,11 @@ const REAL_PHOTOS = [
   "assets/images/portfolio/photo-03.webp"
 ];
 REAL_PHOTOS.forEach((src) => {
-  photoGrid.innerHTML += `<div class="work-item"><img src="${src}" alt="Rasm ish namunasi" loading="lazy" decoding="async"></div>`;
+  const item = document.createElement('div');
+  item.className = 'work-item';
+  item.innerHTML = `<img src="${src}" alt="Rasm ish namunasi" loading="lazy" decoding="async">`;
+  item.addEventListener('click', () => openLightbox('photo', src));
+  photoGrid.appendChild(item);
 });
 
 const REAL_VIDEOS = [
@@ -57,15 +85,12 @@ REAL_VIDEOS.forEach(({ src, poster }) => {
   const item = document.createElement('div');
   item.className = 'work-item';
   item.innerHTML = `
-    <video muted loop playsinline preload="metadata" poster="${poster}">
-      <source src="${src}" type="video/mp4">
-    </video>
+    <video src="${src}" poster="${poster}" muted loop playsinline preload="metadata"></video>
     <div class="play"><span>▶</span></div>`;
-  const video = item.querySelector('video');
-  item.addEventListener('click', () => {
-    if (video.paused) { video.play(); item.classList.add('playing'); }
-    else { video.pause(); item.classList.remove('playing'); }
-  });
+  const previewVideo = item.querySelector('video');
+  item.addEventListener('mouseenter', () => previewVideo.play().catch(() => {}));
+  item.addEventListener('mouseleave', () => { previewVideo.pause(); previewVideo.currentTime = 0; });
+  item.addEventListener('click', () => openLightbox('video', src, poster));
   videoGrid.appendChild(item);
 });
 
