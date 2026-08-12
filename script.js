@@ -38,9 +38,9 @@ const orb2 = document.querySelector('.glow-orb-2');
 
 window.addEventListener('scroll', () => {
   const y = window.scrollY;
-  if (heroVisual) heroVisual.style.transform = translateY(${y * 0.15}px);
-if (orb1) orb1.style.transform = translateY(${y * 0.25}px);
-if (orb2) orb2.style.transform = translateY(${y * -0.18}px);
+  if (heroVisual) heroVisual.style.transform = 'translateY(${y * 0.15}px)';
+  if (orb1) orb1.style.transform = 'translateY(${y * 0.25}px)';
+  if (orb2) orb2.style.transform = 'translateY(${y * -0.18}px)';
 }, { passive: true });
 
 if (heroVideo) {
