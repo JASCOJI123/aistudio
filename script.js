@@ -10,11 +10,58 @@ const mainNav = document.getElementById('mainNav');
 burgerBtn.addEventListener('click', () => mainNav.classList.toggle('open'));
 mainNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mainNav.classList.remove('open')));
 
-/* ---- scroll reveal ---- */
+/* ---- header: pastga scroll qilinsa yashirinadi, yuqoriga qaytilsa chiqadi ---- */
+const headerEl = document.querySelector('header');
+let lastScrollY = window.scrollY;
+window.addEventListener('scroll', () => {
+  const y = window.scrollY;
+  if (y > lastScrollY && y > 120) {
+    headerEl.classList.add('hide-header');
+    mainNav.classList.remove('open');
+  } else {
+    headerEl.classList.remove('hide-header');
+  }
+  lastScrollY = y;
+}, { passive: true });
+
+/* ---- scroll reveal (kuchliroq: scale + slide) ---- */
 const obs = new IntersectionObserver((entries) => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
 }, { threshold: .12 });
-document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => obs.observe(el));
+
+/* ---- parallax: hero rasm va nur effektlari scroll bilan sekin harakatlanadi ---- */
+const heroVisual = document.querySelector('.hero-visual');
+const orb1 = document.querySelector('.glow-orb-1');
+const orb2 = document.querySelector('.glow-orb-2');
+window.addEventListener('scroll', () => {
+  const y = window.scrollY;
+  if (heroVisual) heroVisual.style.transform = `translateY(${y * 0.15}px)`;
+  if (orb1) orb1.style.transform = `translateY(${y * 0.25}px)`;
+  if (orb2) orb2.style.transform = `translateY(${y * -0.18}px)`;
+}, { passive: true });
+
+/* ---- raqamlar scroll qilinganda 0 dan sanab chiqadi ---- */
+function animateCount(el) {
+  const target = parseInt(el.dataset.target, 10);
+  const duration = 1300;
+  const start = performance.now();
+  function tick(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 4); // easeOutQuart
+    const value = Math.round(target * eased);
+    el.textContent = value.toLocaleString('fr-FR').replace(/,/g, ' ');
+    if (progress < 1) requestAnimationFrame(tick);
+    else el.textContent = target.toLocaleString('fr-FR').replace(/,/g, ' ');
+  }
+  requestAnimationFrame(tick);
+}
+const countObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { animateCount(e.target); countObs.unobserve(e.target); }
+  });
+}, { threshold: .4 });
+document.querySelectorAll('.count-num').forEach(el => countObs.observe(el));
 
 /* ============================================================
    PARTNERS MARQUEE — bitta logo joyi, harakatlanadigan animatsiya
