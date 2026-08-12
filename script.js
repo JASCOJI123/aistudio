@@ -125,7 +125,11 @@ const REAL_VIDEOS = [
   { src: "assets/videos/video-04.mp4", poster: "assets/images/portfolio/video-04-poster.webp" },
   { src: "assets/videos/video-05.mp4", poster: "assets/images/portfolio/video-05-poster.webp" },
   { src: "assets/videos/video-06.mp4", poster: "assets/images/portfolio/video-06-poster.webp" },
-  { src: "assets/videos/video-07.mp4", poster: "assets/images/portfolio/video-07-poster.webp" }
+  { src: "assets/videos/video-07.mp4", poster: "assets/images/portfolio/video-07-poster.webp" },
+  { src: "assets/videos/video-08.mp4", poster: "assets/images/portfolio/video-08-poster.webp" },
+  { src: "assets/videos/video-09.mp4", poster: "assets/images/portfolio/video-09-poster.webp" },
+  { src: "assets/videos/video-10.mp4", poster: "assets/images/portfolio/video-10-poster.webp" },
+  { src: "assets/videos/video-11.mp4", poster: "assets/images/portfolio/video-11-poster.webp" },
 ];
 
 REAL_VIDEOS.forEach(({ src, poster }) => {
