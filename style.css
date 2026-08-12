@@ -213,16 +213,46 @@
   .coverflow-item img,.coverflow-item video{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;}
   .coverflow-item.playing .play{opacity:0;}
   .coverflow-item .play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+  .coverflow-item .play span,
+  .cf-nav button,
+  .lightbox-close{
+    position:relative;overflow:hidden;
+    background:linear-gradient(135deg, rgba(255,255,255,.32), rgba(255,255,255,.06) 60%, rgba(255,255,255,.14));
+    -webkit-backdrop-filter:blur(18px) saturate(190%);
+    backdrop-filter:blur(18px) saturate(190%);
+    border:1px solid rgba(255,255,255,.45);
+    box-shadow:
+      inset 0 1px 1px rgba(255,255,255,.7),
+      inset 0 -6px 10px -6px rgba(0,0,0,.35),
+      0 10px 24px -10px rgba(0,0,0,.55);
+    transition:transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease, background .25s ease;
+  }
+  .coverflow-item .play span::before,
+  .cf-nav button::before,
+  .lightbox-close::before{
+    content:"";position:absolute;top:-40%;left:-20%;width:70%;height:70%;border-radius:50%;
+    background:radial-gradient(circle, rgba(255,255,255,.55), transparent 70%);
+    transform:rotate(-20deg);pointer-events:none;
+  }
+  .coverflow-item .play span:hover,
+  .cf-nav button:hover,
+  .lightbox-close:hover{
+    transform:scale(1.08);
+    background:linear-gradient(135deg, rgba(255,255,255,.42), rgba(255,255,255,.1) 60%, rgba(255,140,60,.18));
+    box-shadow:
+      inset 0 1px 1px rgba(255,255,255,.8),
+      inset 0 -6px 10px -6px rgba(0,0,0,.3),
+      0 14px 30px -10px rgba(255,90,31,.4);
+  }
   .coverflow-item .play span{
-    width:46px;height:46px;border-radius:50%;background:rgba(10,9,8,.55);backdrop-filter:blur(4px);
-    display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;border:1px solid rgba(255,255,255,.3);
+    width:46px;height:46px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;
   }
   .cf-nav{display:flex;justify-content:center;gap:14px;margin-top:24px;}
   .cf-nav button{
-    width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--surface2);
-    color:var(--text);font-size:1.1rem;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;
+    width:44px;height:44px;border-radius:50%;
+    color:var(--text);font-size:1.15rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
   }
-  .cf-nav button:hover{border-color:var(--accent);color:var(--accent2);}
   #panel-video{display:none;}
 
   /* model face selector — coverflow-item bilan birga ishlatiladi */
@@ -305,11 +335,10 @@
   .lightbox-inner img,.lightbox-inner video{width:100%;height:100%;object-fit:contain;background:#000;display:block;}
   .lightbox-close{
     position:absolute;top:22px;right:26px;z-index:201;
-    width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.25);
-    background:rgba(255,255,255,.08);color:#fff;font-size:1.1rem;cursor:pointer;
-    display:flex;align-items:center;justify-content:center;transition:.2s;
+    width:42px;height:42px;font-size:1.1rem;color:#fff;
+    border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;
   }
-  .lightbox-close:hover{background:var(--accent);border-color:var(--accent);transform:rotate(90deg);}
+  .lightbox-close:hover{transform:scale(1.08) rotate(90deg);}
   @media (max-width:600px){
     footer{padding:44px 5vw 30px;}
     .marquee-track{gap:36px;}
