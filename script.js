@@ -32,13 +32,15 @@ document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => 
 
 /* ---- parallax: hero rasm va nur effektlari scroll bilan sekin harakatlanadi ---- */
 const heroVisual = document.querySelector('.hero-visual');
+const heroVideo = heroVisual ? heroVisual.querySelector('video') : null;
 const orb1 = document.querySelector('.glow-orb-1');
 const orb2 = document.querySelector('.glow-orb-2');
 window.addEventListener('scroll', () => {
   const y = window.scrollY;
-  if (heroVisual) heroVisual.style.transform = `translateY(${y * 0.15}px)`;
-  if (orb1) orb1.style.transform = `translateY(${y * 0.25}px)`;
-  if (orb2) orb2.style.transform = `translateY(${y * -0.18}px)`;
+  if (heroVisual) heroVisual.style.transform = translateY(${y * 0.15}px);
+  if (heroVideo) heroVideo.style.transform = scale(${1 + Math.min(y * 0.0003, 0.15)});
+  if (orb1) orb1.style.transform = translateY(${y * 0.25}px);
+  if (orb2) orb2.style.transform = translateY(${y * -0.18}px);
 }, { passive: true });
 
 /* ---- raqamlar scroll qilinganda 0 dan sanab chiqadi ---- */
