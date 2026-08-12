@@ -7,14 +7,21 @@
 /* ---- mobile nav ---- */
 const burgerBtn = document.getElementById('burgerBtn');
 const mainNav = document.getElementById('mainNav');
-burgerBtn.addEventListener('click', () => mainNav.classList.toggle('open'));
-mainNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mainNav.classList.remove('open')));
+burgerBtn.addEventListener('click', () => {
+  mainNav.classList.toggle('open');
+  document.body.classList.toggle('nav-open', mainNav.classList.contains('open'));
+});
+mainNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+  mainNav.classList.remove('open');
+  document.body.classList.remove('nav-open');
+}));
 
 /* ---- header: pastga scroll qilinsa yashirinadi, yuqoriga qaytilsa chiqadi ---- */
 const headerEl = document.querySelector('header');
 let lastScrollY = window.scrollY;
 window.addEventListener('scroll', () => {
   const y = window.scrollY;
+  headerEl.classList.toggle('scrolled', y > 30);
   if (y > lastScrollY && y > 120) {
     headerEl.classList.add('hide-header');
     mainNav.classList.remove('open');
@@ -30,17 +37,13 @@ const obs = new IntersectionObserver((entries) => {
 }, { threshold: .12 });
 document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => obs.observe(el));
 
-/* ---- parallax: hero rasm va nur effektlari scroll bilan sekin harakatlanadi ---- */
+/* ---- parallax: hero video scroll bilan sekin harakatlanadi ---- */
 const heroVisual = document.querySelector('.hero-visual');
 const heroVideo = heroVisual ? heroVisual.querySelector('video') : null;
-const orb1 = document.querySelector('.glow-orb-1');
-const orb2 = document.querySelector('.glow-orb-2');
 
 window.addEventListener('scroll', () => {
   const y = window.scrollY;
-  if (heroVisual) heroVisual.style.transform = 'translateY(${y * 0.15}px)';
-  if (orb1) orb1.style.transform = 'translateY(${y * 0.25}px)';
-  if (orb2) orb2.style.transform = 'translateY(${y * -0.18}px)';
+  if (heroVisual) heroVisual.style.transform = `translateY(${y * 0.1}px)`;
 }, { passive: true });
 
 if (heroVideo) {
@@ -88,6 +91,85 @@ const slotHTML = LOGO_URL
 marqueeTrack.innerHTML = slotHTML.repeat(10);
 
 /* ============================================================
+   COVERFLOW — 3D perspektivali karusel (Ishlarim + Model tanlash)
+   ============================================================ */
+function initCoverflow(container, opts = {}) {
+  const stepPx = opts.stepPx ?? 130;
+  const angle = opts.angle ?? 42;
+  let items = [];
+  let active = 0;
+
+  function render() {
+    items.forEach((item, i) => {
+      const offset = i - active;
+      const abs = Math.abs(offset);
+      const clamped = Math.max(-4, Math.min(4, offset));
+      const tx = clamped * stepPx;
+      const rot = clamped === 0 ? 0 : -Math.sign(clamped) * angle;
+      const scale = abs === 0 ? 1 : Math.max(.62, 1 - abs * .14);
+      const tz = -abs * 90;
+      const opacity = abs > 4 ? 0 : 1 - abs * .18;
+      item.style.transform = `translate(-50%,-50%) translateX(${tx}px) translateZ(${tz}px) rotateY(${rot}deg) scale(${scale})`;
+      item.style.zIndex = String(100 - abs);
+      item.style.opacity = String(Math.max(0, opacity));
+      item.style.pointerEvents = abs > 4 ? 'none' : 'auto';
+      item.classList.toggle('cf-active', offset === 0);
+    });
+  }
+
+  function goTo(i) {
+    active = Math.max(0, Math.min(items.length - 1, i));
+    render();
+  }
+
+  function setItems(newItems) {
+    items = newItems;
+    active = 0;
+    items.forEach((item, i) => {
+      item.addEventListener('click', (e) => {
+        if (justDragged) { e.stopImmediatePropagation(); e.preventDefault(); return; }
+        const offset = i - active;
+        if (offset !== 0) { e.stopImmediatePropagation(); e.preventDefault(); goTo(i); }
+      }, true);
+    });
+    render();
+  }
+
+  /* sudrab (drag) aylantirish — setPointerCapture ishlatilmaydi, aks holda
+     mobil brauzerlarda item ustidagi "click" (tanlash) ishlamay qoladi */
+  let dragging = false, startX = 0, startActive = 0, moved = false, justDragged = false;
+
+  function onMove(e) {
+    if (!dragging) return;
+    const dx = e.clientX - startX;
+    if (Math.abs(dx) > 4) moved = true;
+    const deltaSteps = -dx / stepPx;
+    goTo(Math.round(startActive + deltaSteps));
+  }
+  function onUp() {
+    dragging = false;
+    if (moved) { justDragged = true; setTimeout(() => { justDragged = false; }, 80); }
+    document.removeEventListener('pointermove', onMove);
+    document.removeEventListener('pointerup', onUp);
+    document.removeEventListener('pointercancel', onUp);
+  }
+  container.addEventListener('pointerdown', (e) => {
+    dragging = true; moved = false; startX = e.clientX; startActive = active;
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', onUp);
+    document.addEventListener('pointercancel', onUp);
+  });
+  container.addEventListener('wheel', (e) => {
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+      e.preventDefault();
+      goTo(active + (e.deltaX > 0 ? 1 : -1));
+    }
+  }, { passive: false });
+
+  return { setItems, goTo, next: () => goTo(active + 1), prev: () => goTo(active - 1) };
+}
+
+/* ============================================================
    MENING ISHLARIM — rasm va video alohida joylarda
    ============================================================ */
 /* ============================================================
@@ -116,19 +198,27 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLight
 
 const photoGrid = document.getElementById('photoGrid');
 const videoGrid = document.getElementById('videoGrid');
+const photoCoverflow = initCoverflow(photoGrid);
+const videoCoverflow = initCoverflow(videoGrid);
+document.getElementById('photoPrev').addEventListener('click', photoCoverflow.prev);
+document.getElementById('photoNext').addEventListener('click', photoCoverflow.next);
+document.getElementById('videoPrev').addEventListener('click', videoCoverflow.prev);
+document.getElementById('videoNext').addEventListener('click', videoCoverflow.next);
 
 const REAL_PHOTOS = [
   "assets/images/portfolio/photo-01.webp",
   "assets/images/portfolio/photo-02.webp",
   "assets/images/portfolio/photo-03.webp"
 ];
-REAL_PHOTOS.forEach((src) => {
+const photoItems = REAL_PHOTOS.map((src) => {
   const item = document.createElement('div');
-  item.className = 'work-item';
+  item.className = 'coverflow-item work-item';
   item.innerHTML = `<img src="${src}" alt="Rasm ish namunasi" loading="lazy" decoding="async">`;
   item.addEventListener('click', () => openLightbox('photo', src));
   photoGrid.appendChild(item);
+  return item;
 });
+photoCoverflow.setItems(photoItems);
 
 const REAL_VIDEOS = [
   { src: "assets/videos/video-01.mp4", poster: "assets/images/portfolio/video-01-poster.webp" },
@@ -144,18 +234,20 @@ const REAL_VIDEOS = [
   { src: "assets/videos/video-11.mp4", poster: "assets/images/portfolio/video-11-poster.webp" },
 ];
 
-REAL_VIDEOS.forEach(({ src, poster }) => {
+const videoItems = REAL_VIDEOS.map(({ src, poster }) => {
   const item = document.createElement('div');
-  item.className = 'work-item';
+  item.className = 'coverflow-item work-item';
   item.innerHTML = `
     <video src="${src}" poster="${poster}" muted loop playsinline preload="metadata"></video>
     <div class="play"><span>▶</span></div>`;
   const previewVideo = item.querySelector('video');
-  item.addEventListener('mouseenter', () => previewVideo.play().catch(() => {}));
+  item.addEventListener('mouseenter', () => { if (item.classList.contains('cf-active')) previewVideo.play().catch(() => {}); });
   item.addEventListener('mouseleave', () => { previewVideo.pause(); previewVideo.currentTime = 0; });
   item.addEventListener('click', () => openLightbox('video', src, poster));
   videoGrid.appendChild(item);
+  return item;
 });
+videoCoverflow.setItems(videoItems);
 
 document.querySelectorAll('.work-tabs button').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -168,32 +260,71 @@ document.querySelectorAll('.work-tabs button').forEach(btn => {
 });
 
 /* ============================================================
-   MODEL TANLASH — bir nechta model yuzini tanlash
-   Namunaviy rasmlar hozircha vaqtincha manzildan.
-   Haqiqiy yuzlarni assets/images/models/ papkasiga qo'yib,
-   quyidagi MODEL_IMAGES ro'yxatini shu fayl nomlariga almashtiring.
+   MODEL TANLASH — Ayol / Erkak bo'limlari alohida
+   O'ZINGIZ RASM QO'SHISH UCHUN:
+   1) Rasmlarni loyihadagi assets/images/models/ papkasiga joylang
+      (portret, taxminan 800x1420px, .webp yoki .jpg).
+   2) Fayl nomlari: ayol-01.webp, ayol-02.webp ... (ayollar),
+                    erkak-01.webp, erkak-02.webp ... (erkaklar).
+   3. Nechta rasm bo'lsa, shuncha qator qo'shing/olib tashlang.
    ============================================================ */
-const MODEL_IMAGES = Array.from({ length: 10 }, (_, i) =>
-  `https://picsum.photos/seed/aistudio-model-${i + 1}/400/520` // TODO: assets/images/models/model-XX.webp bilan almashtiring
-);
+const MODEL_IMAGES_FEMALE = [
+  "assets/images/models/ayol-01.webp",
+  "assets/images/models/ayol-02.webp",
+  "assets/images/models/ayol-03.webp",
+  "assets/images/models/ayol-04.webp",
+  "assets/images/models/ayol-05.webp",
+  "assets/images/models/ayol-06.webp",
+];
+const MODEL_IMAGES_MALE = [
+  "assets/images/models/erkak-01.webp",
+  "assets/images/models/erkak-02.webp",
+  "assets/images/models/erkak-03.webp",
+  "assets/images/models/erkak-04.webp",
+  "assets/images/models/erkak-05.webp",
+  "assets/images/models/erkak-06.webp",
+];
 
 const modelGrid = document.getElementById('modelGrid');
-let selectedModels = [];
-MODEL_IMAGES.forEach((src, idx) => {
-  const i = idx + 1;
-  const card = document.createElement('div');
-  card.className = 'model-card';
-  card.dataset.id = i;
-  card.innerHTML = `<img src="${src}" alt="Model yuzi ${i}" loading="lazy" decoding="async">
-                     <span class="num">${String(i).padStart(2, '0')}</span>
-                     <span class="check">✓</span>`;
-  card.addEventListener('click', () => {
-    card.classList.toggle('sel');
-    if (card.classList.contains('sel')) { selectedModels.push(i); }
-    else { selectedModels = selectedModels.filter(x => x !== i); }
-    document.getElementById('selCount').textContent = selectedModels.length;
+const modelCoverflow = initCoverflow(modelGrid, { stepPx: 110, angle: 40 });
+document.getElementById('modelPrev').addEventListener('click', modelCoverflow.prev);
+document.getElementById('modelNext').addEventListener('click', modelCoverflow.next);
+
+let selectedModels = []; // masalan: "female-1", "male-3"
+let currentGender = 'female';
+
+function buildModelItems(gender) {
+  modelGrid.innerHTML = '';
+  const list = gender === 'female' ? MODEL_IMAGES_FEMALE : MODEL_IMAGES_MALE;
+  const items = list.map((src, idx) => {
+    const i = idx + 1;
+    const id = `${gender}-${i}`;
+    const card = document.createElement('div');
+    card.className = 'coverflow-item model-card' + (selectedModels.includes(id) ? ' sel' : '');
+    card.dataset.id = id;
+    card.innerHTML = `<img src="${src}" alt="Model yuzi ${i}" loading="lazy" decoding="async">
+                       <span class="num">${String(i).padStart(2, '0')}</span>
+                       <span class="check">✓</span>`;
+    card.addEventListener('click', () => {
+      card.classList.toggle('sel');
+      if (card.classList.contains('sel')) { selectedModels.push(id); }
+      else { selectedModels = selectedModels.filter(x => x !== id); }
+      document.getElementById('selCount').textContent = selectedModels.length;
+    });
+    modelGrid.appendChild(card);
+    return card;
   });
-  modelGrid.appendChild(card);
+  modelCoverflow.setItems(items);
+}
+buildModelItems(currentGender);
+
+document.querySelectorAll('.model-tabs button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.model-tabs button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentGender = btn.dataset.gender;
+    buildModelItems(currentGender);
+  });
 });
 
 /* ============================================================
@@ -259,7 +390,10 @@ function render() {
   let orderText = "";
   const brand = brandInput.value.trim();
   const brandLine = brand ? `%0ABrend: ${encodeURIComponent(brand)}` : "";
-  const modelsLine = selectedModels.length ? `%0AModel: ${encodeURIComponent(selectedModels.map(m => 'Model ' + String(m).padStart(2, '0')).join(', '))}` : "";
+  const modelsLine = selectedModels.length ? `%0AModel: ${encodeURIComponent(selectedModels.map(id => {
+    const [gender, num] = id.split('-');
+    return (gender === 'female' ? 'Ayol' : 'Erkak') + ' ' + String(num).padStart(2, '0');
+  }).join(', '))}` : "";
 
   if (mode === 'single') {
     if (photoQty > 0) { lines.push(`<div class="r-line"><span>AI Rasm × ${photoQty}</span><b>${fmt(photoQty * PHOTO_PRICE)}</b></div>`); total += photoQty * PHOTO_PRICE; }
