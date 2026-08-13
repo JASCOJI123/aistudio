@@ -4,6 +4,25 @@
    Base64 ISHLATILMAYDI — TZ talabiga muvofiq.
    ============================================================ */
 
+/* ---- yuklanish ekrani ---- */
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const ls = document.getElementById('loadingScreen');
+    if (ls) ls.classList.add('done');
+  }, 500);
+});
+
+/* ---- kursorga ergashuvchi nur ---- */
+const cursorSpot = document.getElementById('cursor-spot');
+if (cursorSpot && matchMedia('(pointer:fine)').matches) {
+  window.addEventListener('mousemove', (e) => {
+    cursorSpot.style.setProperty('--mx', e.clientX + 'px');
+    cursorSpot.style.setProperty('--my', e.clientY + 'px');
+    cursorSpot.classList.add('active');
+  }, { passive: true });
+  document.addEventListener('mouseleave', () => cursorSpot.classList.remove('active'));
+}
+
 /* ---- mobile nav ---- */
 const burgerBtn = document.getElementById('burgerBtn');
 const mainNav = document.getElementById('mainNav');
@@ -96,8 +115,19 @@ marqueeTrack.innerHTML = slotHTML.repeat(10);
 function initCoverflow(container, opts = {}) {
   const stepPx = opts.stepPx ?? 130;
   const angle = opts.angle ?? 42;
+  const progressEl = opts.progressEl ? document.getElementById(opts.progressEl) : null;
+  const counterEl = opts.counterEl ? document.getElementById(opts.counterEl) : null;
   let items = [];
   let active = 0;
+
+  function updateHud() {
+    if (progressEl) {
+      progressEl.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('on', i === active));
+    }
+    if (counterEl && items.length) {
+      counterEl.innerHTML = `<b>${String(active + 1).padStart(2, '0')}</b> / ${String(items.length).padStart(2, '0')}`;
+    }
+  }
 
   function render() {
     items.forEach((item, i) => {
@@ -115,6 +145,7 @@ function initCoverflow(container, opts = {}) {
       item.style.pointerEvents = abs > 4 ? 'none' : 'auto';
       item.classList.toggle('cf-active', offset === 0);
     });
+    updateHud();
   }
 
   function goTo(i) {
@@ -132,6 +163,10 @@ function initCoverflow(container, opts = {}) {
         if (offset !== 0) { e.stopImmediatePropagation(); e.preventDefault(); goTo(i); }
       }, true);
     });
+    if (progressEl) {
+      progressEl.innerHTML = items.map((_, i) => `<span class="dot" data-i="${i}"></span>`).join('');
+      progressEl.querySelectorAll('.dot').forEach(d => d.addEventListener('click', () => goTo(parseInt(d.dataset.i, 10))));
+    }
     render();
   }
 
@@ -198,8 +233,8 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLight
 
 const photoGrid = document.getElementById('photoGrid');
 const videoGrid = document.getElementById('videoGrid');
-const photoCoverflow = initCoverflow(photoGrid);
-const videoCoverflow = initCoverflow(videoGrid);
+const photoCoverflow = initCoverflow(photoGrid, { progressEl: 'photoProgress', counterEl: 'photoCounter' });
+const videoCoverflow = initCoverflow(videoGrid, { progressEl: 'videoProgress', counterEl: 'videoCounter' });
 document.getElementById('photoPrev').addEventListener('click', photoCoverflow.prev);
 document.getElementById('photoNext').addEventListener('click', photoCoverflow.next);
 document.getElementById('videoPrev').addEventListener('click', videoCoverflow.prev);
@@ -288,7 +323,7 @@ const MODEL_IMAGES_MALE = [
 ];
 
 const modelGrid = document.getElementById('modelGrid');
-const modelCoverflow = initCoverflow(modelGrid, { stepPx: 110, angle: 40 });
+const modelCoverflow = initCoverflow(modelGrid, { stepPx: 110, angle: 40, progressEl: 'modelProgress', counterEl: 'modelCounter' });
 document.getElementById('modelPrev').addEventListener('click', modelCoverflow.prev);
 document.getElementById('modelNext').addEventListener('click', modelCoverflow.next);
 
@@ -309,6 +344,10 @@ function buildModelItems(gender) {
                        <span class="check">✓</span>`;
     card.addEventListener('click', () => {
       card.classList.toggle('sel');
+      card.classList.remove('sel-bounce');
+      void card.offsetWidth; // reflow — animatsiyani qayta ishga tushirish uchun
+      card.classList.add('sel-bounce');
+      setTimeout(() => card.classList.remove('sel-bounce'), 450);
       if (card.classList.contains('sel')) { selectedModels.push(id); }
       else { selectedModels = selectedModels.filter(x => x !== id); }
       document.getElementById('selCount').textContent = selectedModels.length;
@@ -325,7 +364,11 @@ document.querySelectorAll('.model-tabs button').forEach(btn => {
     document.querySelectorAll('.model-tabs button').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     currentGender = btn.dataset.gender;
-    buildModelItems(currentGender);
+    modelGrid.classList.add('cf-switching');
+    setTimeout(() => {
+      buildModelItems(currentGender);
+      requestAnimationFrame(() => modelGrid.classList.remove('cf-switching'));
+    }, 220);
   });
 });
 

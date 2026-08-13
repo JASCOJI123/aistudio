@@ -21,6 +21,10 @@
 </head>
 <body>
 
+<div id="loadingScreen"><div class="load-mark">AI</div></div>
+<div class="bg-aura"><span class="a1"></span><span class="a2"></span><span class="a3"></span></div>
+<div id="cursor-spot"></div>
+
 
 <header>
   <div class="logo"><span class="mark">AI</span> STUDIO</div>
@@ -101,10 +105,14 @@
   <div id="panel-photo" class="reveal">
     <div class="coverflow" id="photoGrid"></div>
     <div class="cf-nav"><button id="photoPrev" aria-label="Oldingi">‹</button><button id="photoNext" aria-label="Keyingi">›</button></div>
+    <div class="cf-progress" id="photoProgress"></div>
+    <div class="cf-counter" id="photoCounter"></div>
   </div>
   <div id="panel-video" class="reveal">
     <div class="coverflow" id="videoGrid"></div>
     <div class="cf-nav"><button id="videoPrev" aria-label="Oldingi">‹</button><button id="videoNext" aria-label="Keyingi">›</button></div>
+    <div class="cf-progress" id="videoProgress"></div>
+    <div class="cf-counter" id="videoCounter"></div>
   </div>
 </section>
 
@@ -120,6 +128,8 @@
   </div>
   <div class="coverflow reveal" id="modelGrid"></div>
   <div class="cf-nav"><button id="modelPrev" aria-label="Oldingi">‹</button><button id="modelNext" aria-label="Keyingi">›</button></div>
+  <div class="cf-progress" id="modelProgress"></div>
+  <div class="cf-counter" id="modelCounter"></div>
   <div class="model-note">
     <span><b id="selCount">0</b> ta model tanlandi</span>
     <span>Namunaviy yuzlar — yakuniy natija buyurtmangizga moslab generatsiya qilinadi</span>
