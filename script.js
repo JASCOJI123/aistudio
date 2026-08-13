@@ -208,8 +208,8 @@ document.getElementById('videoNext').addEventListener('click', videoCoverflow.ne
 const REAL_PHOTOS = [
   "assets/images/portfolio/photo-01.webp",
   "assets/images/portfolio/photo-02.webp",
-  "assets/images/portfolio/photo-03.webp"
-  "assets/images/portfolio/photo-04.webp"
+  "assets/images/portfolio/photo-03.webp",
+  "assets/images/portfolio/photo-04.webp",
   "assets/images/portfolio/photo-05.webp"
 ];
 const photoItems = REAL_PHOTOS.map((src) => {
