@@ -241,6 +241,9 @@ document.getElementById('videoPrev').addEventListener('click', videoCoverflow.pr
 document.getElementById('videoNext').addEventListener('click', videoCoverflow.next);
 
 const REAL_PHOTOS = [
+  "assets/images/portfolio/photo-06.webp",
+  "assets/images/portfolio/photo-07.webp",
+  "assets/images/portfolio/photo-08.webp",
   "assets/images/portfolio/photo-01.webp",
   "assets/images/portfolio/photo-02.webp",
   "assets/images/portfolio/photo-03.webp",
@@ -258,6 +261,10 @@ const photoItems = REAL_PHOTOS.map((src) => {
 photoCoverflow.setItems(photoItems);
 
 const REAL_VIDEOS = [
+  { src: "assets/videos/video-12.mp4", poster: "assets/images/portfolio/video-12-poster.webp" },
+  { src: "assets/videos/video-13.mp4", poster: "assets/images/portfolio/video-13-poster.webp" },
+  { src: "assets/videos/video-14.mp4", poster: "assets/images/portfolio/video-14-poster.webp" },
+  { src: "assets/videos/video-15.mp4", poster: "assets/images/portfolio/video-15-poster.webp" },
   { src: "assets/videos/video-01.mp4", poster: "assets/images/portfolio/video-01-poster.webp" },
   { src: "assets/videos/video-02.mp4", poster: "assets/images/portfolio/video-02-poster.webp" },
   { src: "assets/videos/video-03.mp4", poster: "assets/images/portfolio/video-03-poster.webp" },
