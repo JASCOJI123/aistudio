@@ -102,7 +102,7 @@ document.querySelectorAll('.count-num').forEach(el => countObs.observe(el));
    Logotipni almashtirish uchun LOGO_URL manzilini o'zgartiring.
    ============================================================ */
 const LOGO_URL = "assets/images/logo.webp";
-const PARTNER_LINK = "https://t.me/dunyotextil"; // hamkor bosilganda shu Telegram katalogiga o'tadi
+const PARTNER_LINK = "https://t.me/jascoav"; // hamkor bosilganda shu Telegram katalogiga o'tadi
 const marqueeTrack = document.getElementById('marqueeTrack');
 const slotHTML = LOGO_URL
   ? `<a class="logo-slot" href="${PARTNER_LINK}" target="_blank" rel="noopener" style="background:#fff;border:1px solid var(--line);"><img src="${LOGO_URL}" alt="Hamkor logotipi" loading="lazy" decoding="async"></a>`
