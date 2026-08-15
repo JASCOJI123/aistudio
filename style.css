@@ -420,3 +420,85 @@
     .marquee-track{gap:36px;}
     .work-tabs{flex-wrap:wrap;}
   }
+
+/* ============================================================
+   NEGA BIZ (why-us)
+   ============================================================ */
+.why-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+.why-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:26px 22px;position:relative;overflow:hidden;transition:.25s;}
+.why-card:hover{border-color:var(--accent);transform:translateY(-3px);}
+.why-num{font-family:'Archivo',sans-serif;font-weight:900;font-size:1.6rem;color:var(--accent2);opacity:.5;margin-bottom:10px;}
+.why-card h4{font-family:'Archivo',sans-serif;font-size:1rem;text-transform:uppercase;margin-bottom:8px;letter-spacing:-.01em;}
+.why-card p{color:var(--muted);font-size:.86rem;line-height:1.55;}
+@media (max-width:900px){.why-grid{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:560px){.why-grid{grid-template-columns:1fr;}}
+
+/* ============================================================
+   STATISTIKA STRIP
+   ============================================================ */
+.stats-strip{
+  display:flex;justify-content:space-around;flex-wrap:wrap;gap:24px;
+  margin:0 6vw 0;padding:38px 4vw;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+}
+.stats-strip .stat{display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px;}
+.stats-strip .count-num{font-family:'Archivo',sans-serif;font-weight:900;font-size:clamp(1.8rem,4vw,2.6rem);color:var(--accent2);}
+.stat-lbl{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;}
+
+/* ============================================================
+   SHARHLAR (testimonials)
+   ============================================================ */
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.testi-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:26px;display:flex;flex-direction:column;gap:14px;}
+.testi-card .stars{color:var(--accent2);letter-spacing:2px;font-size:.9rem;}
+.testi-card p{color:var(--text);font-size:.92rem;line-height:1.6;flex:1;}
+.testi-who{display:flex;flex-direction:column;gap:2px;border-top:1px solid var(--line);padding-top:12px;}
+.testi-who b{font-family:'Archivo',sans-serif;font-size:.85rem;}
+.testi-who span{color:var(--muted);font-size:.76rem;}
+@media (max-width:900px){.testi-grid{grid-template-columns:1fr;}}
+
+/* ============================================================
+   FAQ ACCORDION
+   ============================================================ */
+.faq-list{display:flex;flex-direction:column;gap:10px;}
+.faq-item{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+.faq-q{
+  width:100%;text-align:left;background:transparent;border:0;color:var(--text);
+  padding:20px 22px;font-family:'Inter',sans-serif;font-size:.95rem;font-weight:600;
+  display:flex;justify-content:space-between;align-items:center;cursor:pointer;gap:14px;
+}
+.faq-plus{font-family:'Archivo',sans-serif;color:var(--accent2);font-size:1.2rem;transition:transform .3s;flex-shrink:0;}
+.faq-item.open .faq-plus{transform:rotate(45deg);}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease;}
+.faq-a p{color:var(--muted);font-size:.86rem;line-height:1.6;padding:0 22px 20px;}
+.faq-item.open .faq-a{max-height:220px;}
+
+/* ============================================================
+   STICKY TELEGRAM BUTTON
+   ============================================================ */
+.sticky-tg{
+  position:fixed;bottom:24px;right:24px;z-index:60;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--frame1),var(--frame2));
+  color:#0A0908;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 10px 30px -6px rgba(255,90,31,.55);
+  transition:transform .25s ease,box-shadow .25s ease;
+}
+.sticky-tg:hover{transform:scale(1.08) translateY(-2px);box-shadow:0 14px 36px -6px rgba(255,90,31,.7);}
+.sticky-tg.dim{opacity:.35;}
+@media (max-width:600px){.sticky-tg{width:50px;height:50px;bottom:16px;right:16px;}}
+
+/* ============================================================
+   COOKIE BANNER
+   ============================================================ */
+.cookie-banner{
+  position:fixed;left:20px;right:20px;bottom:20px;z-index:70;
+  max-width:520px;margin:0 auto;
+  background:var(--surface2);border:1px solid var(--line);border-radius:16px;
+  padding:18px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  box-shadow:0 20px 50px -12px rgba(0,0,0,.6);
+  transform:translateY(140%);opacity:0;transition:transform .5s cubic-bezier(.2,.8,.2,1),opacity .5s;
+  pointer-events:none;
+}
+.cookie-banner.show{transform:translateY(0);opacity:1;pointer-events:auto;}
+.cookie-banner p{color:var(--muted);font-size:.82rem;flex:1;min-width:180px;line-height:1.5;}
+.cookie-banner .btn{padding:10px 18px;font-size:.82rem;white-space:nowrap;}

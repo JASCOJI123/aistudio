@@ -474,3 +474,42 @@ function render() {
 brandInput.addEventListener('input', render);
 
 render();
+
+/* ============================================================
+   FAQ ACCORDION
+   ============================================================ */
+document.querySelectorAll('.faq-item').forEach((item) => {
+  const q = item.querySelector('.faq-q');
+  q.addEventListener('click', () => {
+    const wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(o => { if (o !== item) o.classList.remove('open'); });
+    item.classList.toggle('open', !wasOpen);
+  });
+});
+
+/* ============================================================
+   COOKIE BANNER
+   ============================================================ */
+const cookieBanner = document.getElementById('cookieBanner');
+const cookieAccept = document.getElementById('cookieAccept');
+if (cookieBanner && cookieAccept) {
+  if (!localStorage.getItem('ai_studio_cookie_ok')) {
+    setTimeout(() => cookieBanner.classList.add('show'), 1200);
+  }
+  cookieAccept.addEventListener('click', () => {
+    localStorage.setItem('ai_studio_cookie_ok', '1');
+    cookieBanner.classList.remove('show');
+  });
+}
+
+/* ============================================================
+   STICKY TELEGRAM TUGMASI — narx bo'limiga yetganda beliniladi
+   ============================================================ */
+const stickyTg = document.getElementById('stickyTg');
+const narxSection = document.getElementById('narx');
+if (stickyTg && narxSection) {
+  const stickyObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => stickyTg.classList.toggle('dim', e.isIntersecting));
+  }, { threshold: .3 });
+  stickyObs.observe(narxSection);
+}
