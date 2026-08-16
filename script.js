@@ -382,7 +382,9 @@ document.querySelectorAll('.model-tabs button').forEach(btn => {
 /* ============================================================
    NARX HISOBLAGICH
    ============================================================ */
-const PHOTO_PRICE = 50000, VIDEO_PRICE = 100000;
+const PHOTO_PRICE = 50000, VIDEO_PRICE = 300000;
+const DISCOUNT_TIERS = [ { min: 10, pct: 15 }, { min: 5, pct: 10 }, { min: 3, pct: 5 }, { min: 0, pct: 0 } ];
+function getDiscount(qty) { return DISCOUNT_TIERS.find(t => qty >= t.min); }
 let mode = 'single';
 let photoQty = 0, videoQty = 0;
 let selectedPkg = null;
@@ -448,10 +450,22 @@ function render() {
   }).join(', '))}` : "";
 
   if (mode === 'single') {
+    const totalQty = photoQty + videoQty;
+    const disc = getDiscount(totalQty);
     if (photoQty > 0) { lines.push(`<div class="r-line"><span>AI Rasm × ${photoQty}</span><b>${fmt(photoQty * PHOTO_PRICE)}</b></div>`); total += photoQty * PHOTO_PRICE; }
     if (videoQty > 0) { lines.push(`<div class="r-line"><span>AI Video × ${videoQty}</span><b>${fmt(videoQty * VIDEO_PRICE)}</b></div>`); total += videoQty * VIDEO_PRICE; }
     if (lines.length === 0) { lines.push(`<div class="r-line"><span>Hali tanlanmagan</span></div>`); }
-    orderText = `AI STUDIO BUYURTMA${brandLine}%0AXizmat:%0A- AI Rasm: ${photoQty} dona%0A- AI Video: ${videoQty} dona${modelsLine}%0AJami: ${encodeURIComponent(fmt(total))}`;
+    let discountAmt = 0;
+    if (disc.pct > 0 && total > 0) {
+      discountAmt = Math.round(total * disc.pct / 100);
+      lines.push(`<div class="r-line discount"><span>Bulk chegirma (−${disc.pct}%)</span><b>−${fmt(discountAmt)}</b></div>`);
+      total -= discountAmt;
+    }
+    document.querySelectorAll('.bulk-step').forEach(step => {
+      step.classList.toggle('reached', totalQty >= parseInt(step.dataset.min));
+    });
+    const discLine = disc.pct > 0 ? `%0AChegirma: -${disc.pct}%25` : "";
+    orderText = `AI STUDIO BUYURTMA${brandLine}%0AXizmat:%0A- AI Rasm: ${photoQty} dona%0A- AI Video: ${videoQty} dona${discLine}${modelsLine}%0AJami: ${encodeURIComponent(fmt(total))}`;
   } else {
     if (selectedPkg) {
       lines.push(`<div class="r-line"><span>${selectedPkg.name} paket</span><b>${fmt(selectedPkg.price)}</b></div>`);
