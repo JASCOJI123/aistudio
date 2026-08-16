@@ -535,3 +535,6 @@
 
 .r-line.discount span{color:var(--accent2);}
 .r-line.discount b{color:var(--accent2);}
+.r-line.prepay{border-top:1px dashed var(--line);padding-top:12px;margin-top:6px;}
+.r-line.prepay span,.r-line.prepay b{color:var(--text);font-weight:700;}
+.r-line.remain span,.r-line.remain b{color:var(--muted);}

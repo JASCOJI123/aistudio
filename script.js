@@ -383,6 +383,7 @@ document.querySelectorAll('.model-tabs button').forEach(btn => {
    NARX HISOBLAGICH
    ============================================================ */
 const PHOTO_PRICE = 50000, VIDEO_PRICE = 300000;
+const PREPAYMENT_PCT = 50; // oldindan to'lov foizi
 const DISCOUNT_TIERS = [ { min: 10, pct: 15 }, { min: 5, pct: 10 }, { min: 3, pct: 5 }, { min: 0, pct: 0 } ];
 function getDiscount(qty) { return DISCOUNT_TIERS.find(t => qty >= t.min); }
 let mode = 'single';
@@ -476,6 +477,14 @@ function render() {
       lines.push(`<div class="r-line"><span>Paket tanlanmagan</span></div>`);
       orderText = `Salom! AI Studio paketlari haqida ma'lumot olmoqchiman.`;
     }
+  }
+
+  if (total > 0) {
+    const prepay = Math.round(total * PREPAYMENT_PCT / 100);
+    const remain = total - prepay;
+    lines.push(`<div class="r-line prepay"><span>Oldindan to'lov (${PREPAYMENT_PCT}%)</span><b>${fmt(prepay)}</b></div>`);
+    lines.push(`<div class="r-line remain"><span>Qolgan (natija topshirilganda)</span><b>${fmt(remain)}</b></div>`);
+    orderText += `%0AOldindan to'lov (${PREPAYMENT_PCT}%25): ${encodeURIComponent(fmt(prepay))}%0AQolgan summa: ${encodeURIComponent(fmt(remain))}`;
   }
 
   receiptLines.innerHTML = lines.join('');
